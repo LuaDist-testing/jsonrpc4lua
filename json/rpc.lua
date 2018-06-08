@@ -31,6 +31,8 @@ local rpc = {}     -- Module public namespace
 local cjson_safe = require("cjson.safe")
 local http = require("socket.http")
 
+local socketTimeout = 5
+
 -----------------------------------------------------------------------------
 -- PUBLIC functions
 -----------------------------------------------------------------------------
@@ -54,6 +56,12 @@ function rpc.proxy(url)
   }
   setmetatable(serverProxy, proxyMeta)
   return serverProxy
+end
+
+--- Sets connection timeout
+-- @param timeout The number of seconds to wait for connection
+function rpc.setTimeout(timeout)
+	socketTimeout = timeout
 end
 
 --- Calls a JSON RPC method on a remote server.
@@ -87,6 +95,7 @@ function rpc.call(url, method, ...)
   -- fix: https://github.com/pdxmeshnet/cgilua/commit/1b35d812c7d637b91f2ac0a8d91f9698ba84d8d9
   local ltn12 = require('ltn12')
   local resultChunks = {}
+  http.TIMEOUT = socketTimeout
   httpResponse, code = http.request(
     { ['url'] = url,
       sink = ltn12.sink.table(resultChunks),
@@ -102,13 +111,17 @@ function rpc.call(url, method, ...)
   end
   -- And decode the httpResponse and check the JSON RPC result code
   result, err = cjson_safe.decode( httpResponse )
-  if result.result then
+  if result and result.result then
     return result.result, nil
   else
     if err then
       return nil, err
     else
-      return nil, result.error
+      if result and result.error then
+        return nil, result.error
+      else
+        return nil, "Unknown error"
+      end
     end
   end
 end

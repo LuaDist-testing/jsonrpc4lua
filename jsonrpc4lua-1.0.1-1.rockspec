@@ -1,9 +1,17 @@
-package="JSONRPC4Lua"
-version="1.0.0-1"
+-- This file was automatically generated for the LuaDist project.
+
+package="jsonrpc4lua"
+version="1.0.1-1"
+-- LuaDist source
 source = {
-  url = "git://github.com/pdxmeshnet/jsonrpc4lua.git",
-  tag = "1.0.0"
+  tag = "1.0.1-1",
+  url = "git://github.com/LuaDist-testing/jsonrpc4lua.git"
 }
+-- Original source
+-- source = {
+--   url = "git://github.com/pdxmeshnet/jsonrpc4lua.git",
+--   tag = "1.0.1"
+-- }
 description = {
    summary = "JSONRPC4Lua implement JSON-RPC-over-http client and server-side for Lua.",
    detailed = [[
